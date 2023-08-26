@@ -1,4 +1,4 @@
-### Title: Stroke and physical activity the Survey of Health, Ageing 
+### Title: Functional Limitations in Stroke Survivors: Pre-Stroke Physical Activity Matters
 ### and Retirement in Europe (SHARE)
 ### Author: Dan Orsholits
 ### Contributors: Matthieu Boisgontier, Zack Van Allen
