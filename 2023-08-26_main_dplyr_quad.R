@@ -3,7 +3,8 @@
 ### Author: Dan Orsholits
 ### Contributors: Matthieu Boisgontier, Zack Van Allen
 
-## Import the data using haven
+### Packages
+## To import the data
 library("haven")
 ## Use tidyverse stuff
 library("dplyr")
@@ -17,6 +18,8 @@ library("lmerTest")
 ## For figures
 library("ggplot2")
 library("ggeffects")
+
+### Importing data
 
 ## We are not interested in the retrospective waves
 waves <- c(1:2, 4:8)
