@@ -602,27 +602,27 @@ plots_pa_high
 # i.e., replacing baseline_pa_bin_high_cut_1 with baseline_pa_bin_low_cut_1
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
-mod_2_adl <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
+mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
                   I(wave^2) + baseline_age + gender + chronic2 +
                   (wave + I(wave^2) | mergeid) + (1 | subclass),
                   data = model_data_matched,
                   weights = model_data_matched$weights
 )
 
-data_fit_adl <- mod_2_adl@frame
+data_fit_adl_pa_low <- mod_2_adl_pa_low@frame
 
-mod_1_adl <-
+mod_1_adl_pa_low <-
   lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
          I(wave^2) +
          (wave + I(wave^2) | mergeid) +
          (1 | subclass),
-       data = data_fit_adl,
+       data = data_fit_adl_pa_low,
        weights = data_fit_adl$weights
   )
 
-write.csv(summary(mod_1_adl)$coefficients,
+write.csv(summary(mod_1_adl_pa_low)$coefficients,
           file = file.path(res_dir, "mod_1_adl_pa_low_coefs.csv"))
-write.csv(summary(mod_2_adl)$coefficients,
+write.csv(summary(mod_2_adl_pa_low)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_low_coefs.csv"))
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
@@ -697,6 +697,12 @@ ggsave(plot = plots_pa_low[[4]] + ylab("IADL"),
        units = "cm")
 
 plots_pa_low
+
+### 95 Confidence intervals
+confint(mod_2_adl_pa_high)
+confint(mod_2_iadl_pa_high)
+confint(mod_2_adl_pa_low)
+confint(mod_2_iadl_pa_low)
 
 
 ##### Descriptive table ######
