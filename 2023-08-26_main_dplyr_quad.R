@@ -496,6 +496,13 @@ model_data_matched <-
     model_data_matched %>%
     mutate(wave = wave - 1)
 
+# NE FONCTIONNE PAS: DAN, TU POURRAIS M'AIDER STP?
+# reversing coding of physical activity to compute the simple effects of the interaction
+# model_data_matched$stroke_1_0 <- NA
+# model_data_matched$stroke_1_0[is.element(model_data_matched$ever_stroke  ,c("1"))] <- "0"
+# model_data_matched$stroke_1_0[is.element(model_data_matched$ever_stroke  ,c("0"))] <- "1"
+# model_data_matched$stroke_1_0 <- as.numeric(as.character(model_data_matched$stroke_1_0))
+
 #### Estimate main models
 # Main models testing the effect of physical activity (baseline_pa_bin_high) on ADLs
 res_dir <- as.character(Sys.Date())
@@ -701,12 +708,12 @@ ggsave(plot = plots_pa_low[[4]] + ylab("IADL"),
 
 plots_pa_low
 
+# TOURNE PENDANT DES HEURES POUR 1 SEUL INTERVAL: DAN, TU POURRAIS M'AIDER STP?
 ### 95 Confidence intervals
-confint(mod_2_adl_pa_high)
-confint(mod_2_iadl_pa_high)
-confint(mod_2_adl_pa_low)
-confint(mod_2_iadl_pa_low)
-
+#confint(mod_2_adl_pa_high)
+#confint(mod_2_iadl_pa_high)
+#confint(mod_2_adl_pa_low)
+#confint(mod_2_iadl_pa_low)
 
 ##### Descriptive table ######
 library("openxlsx")
