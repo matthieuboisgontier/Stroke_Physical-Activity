@@ -19,7 +19,7 @@ library("lmerTest")
 library("ggplot2")
 library("ggeffects")
 
-### Importing data
+### Import data
 
 ## We are not interested in the retrospective waves
 waves <- c(1:2, 4:8)
