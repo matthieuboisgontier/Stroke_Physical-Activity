@@ -397,6 +397,12 @@ first_ivw_value <- function(first_ivw, wave_var, var) {
   return(ret)
 }
 
+## Function to simplify making baseline variables
+make_baseline <- function(first_ivw, wave_var, var) {
+  ifelse(all(is.na(first_ivw)), NA,
+         first_ivw_value(unique(first_ivw), wave_var, var))
+}
+
 match_data <- model_data
 master_file_m <- master_file %>%
   mutate(country = factor(country,
