@@ -505,7 +505,7 @@ res_dir <- as.character(Sys.Date())
 dir.create(res_dir)
 
 mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + wave +
-                            I(wave^2) + baseline_age + gender + 
+                            I(wave^2) + baseline_age + gender +
                             max_edu + chronic2 +
                             (wave + I(wave^2) | mergeid) +
                             (1 | subclass),
@@ -561,7 +561,7 @@ plot_pa_high_data <- lapply(mget(ls(pattern = "mod.*high$")), ggeffects::ggpredi
 
 plots_pa_high <- lapply(plot_pa_high_data, function(data) {
   ggplot(data = data, mapping = aes(x = x, y = predicted, colour = facet, linetype = group)) +
-    geom_line()  + 
+    geom_line()  +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black")) +
     geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = facet), alpha = 0.2) +
