@@ -413,18 +413,14 @@ master_file_m <- master_file %>%
 match_data <- left_join(match_data, master_file_m)
 match_data <- match_data %>%
   group_by(mergeid) %>%
-  mutate(baseline_age = ifelse(all(is.na(firstivw)), NA,
-                               first_ivw_value(unique(firstivw), wave, age))) %>%
-  mutate(baseline_bmi = ifelse(all(is.na(firstivw)), NA,
-                               first_ivw_value(unique(firstivw), wave, bmi2_clean))) %>%
-  mutate(baseline_chronic1 = ifelse(all(is.na(firstivw)), NA,
-                                    first_ivw_value(unique(firstivw), wave, chronic1))) %>%
-  mutate(baseline_chronic2 = ifelse(all(is.na(firstivw)), NA,
-                                    first_ivw_value(unique(firstivw), wave, chronic2))) %>%
-  mutate(baseline_pa_bin_low_cut_1 = ifelse(all(is.na(firstivw)), NA,
-                                   first_ivw_value(unique(firstivw), wave, pa_bin_low_cut_1))) %>%
-  mutate(baseline_pa_bin_high_cut_1 = ifelse(all(is.na(firstivw)), NA,
-                                   first_ivw_value(unique(firstivw), wave, pa_bin_high_cut_1))) %>%
+  mutate(baseline_age = make_baseline(firstivw, wave, age)) %>%
+  mutate(baseline_bmi = make_baseline(firstivw, wave, bmi2_clean)) %>%
+  mutate(baseline_chronic1 = make_baseline(firstivw, wave, chronic1)) %>%
+  mutate(baseline_chronic2 = make_baseline(firstivw, wave, chronic2)) %>%
+  mutate(baseline_pa_bin_low_cut_1 = make_baseline(firstivw, wave, pa_bin_low_cut_1)) %>%
+  mutate(baseline_pa_bin_high_cut_1 = make_baseline(firstivw, wave, pa_bin_high_cut_1)) %>%
+  mutate(baseline_adl = make_baseline(firstivw, wave, adl_raw)) %>%
+  mutate(baseline_iadl = make_baseline(firstivw, wave, iadl_raw)) %>%
   filter(row_number() == 1) %>%
   ungroup()
 
