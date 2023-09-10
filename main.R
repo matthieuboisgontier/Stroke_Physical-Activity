@@ -520,7 +520,7 @@ mod_1_adl_pa_high <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + wa
                             (wave + I(wave^2) | mergeid) +
                             (1 | subclass),
                           data = data_fit_adl_pa_high,
-                          weights = data_fit_adl$weights
+                          weights = data_fit_adl_pa_high$weights
 )
 
 write.csv(summary(mod_1_adl_pa_high)$coefficients,
@@ -545,7 +545,7 @@ mod_1_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + 
                              (wave + I(wave^2) | mergeid) +
                              (1 | subclass),
                            data = data_fit_iadl_pa_high,
-                           weights = data_fit_iadl$weights
+                           weights = data_fit_iadl_pa_high$weights
 )
 
 write.csv(summary(mod_1_iadl_pa_high)$coefficients,
@@ -623,7 +623,7 @@ mod_1_adl_pa_low <-
          (wave + I(wave^2) | mergeid) +
          (1 | subclass),
        data = data_fit_adl_pa_low,
-       weights = data_fit_adl$weights
+       weights = data_fit_adl_pa_low$weights
   )
 
 write.csv(summary(mod_1_adl_pa_low)$coefficients,
