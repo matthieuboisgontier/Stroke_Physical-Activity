@@ -1,7 +1,6 @@
 ### Title: Functional Limitations in Stroke Survivors: Pre-Stroke Physical Activity Matters
 ### and Retirement in Europe (SHARE)
-### Author: Dan Orsholits
-### Contributor: Matthieu Boisgontier
+### Author: Dan Orsholits, Matthieu Boisgontier
 
 ### Packages
 ## To import the data
