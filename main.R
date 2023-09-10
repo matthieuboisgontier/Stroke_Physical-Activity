@@ -495,19 +495,13 @@ model_data_matched <-
     model_data_matched %>%
     mutate(adl = if_else(adl < 0, NA_real_, adl)) %>%
     mutate(iadl = if_else(iadl < 0, NA_real_, iadl)) %>%
+    mutate(stroke_1_0 = factor(!ever_stroke)) %>%
     mutate(ever_stroke = factor(ever_stroke)) %>%
     mutate(time_stroke = wave - when_stroke_match)
 
 model_data_matched <-
     model_data_matched %>%
     mutate(wave = wave - 1)
-
-# NE FONCTIONNE PAS: DAN, TU POURRAIS M'AIDER STP?
-# reversing coding of physical activity to compute the simple effects of the interaction
-# model_data_matched$stroke_1_0 <- NA
-# model_data_matched$stroke_1_0[is.element(model_data_matched$ever_stroke  ,c("1"))] <- "0"
-# model_data_matched$stroke_1_0[is.element(model_data_matched$ever_stroke  ,c("0"))] <- "1"
-# model_data_matched$stroke_1_0 <- as.numeric(as.character(model_data_matched$stroke_1_0))
 
 #### Estimate main models
 # Main models testing the effect of physical activity (baseline_pa_bin_high) on ADLs
