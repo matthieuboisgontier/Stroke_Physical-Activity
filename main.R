@@ -632,30 +632,30 @@ write.csv(summary(mod_2_adl_pa_low)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_low_coefs.csv"))
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
-mod_2_iadl <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
+mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
                     I(wave^2) + baseline_age + gender + chronic2 +
                     (wave + I(wave^2) | mergeid) + (1 | subclass),
                     data = model_data_matched,
                     weights = model_data_matched$weights
 )
 
-data_fit_iadl <- mod_2_iadl@frame
+data_fit_iadl_low <- mod_2_iadl_low@frame
 
-mod_1_iadl <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
+mod_1_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
                      I(wave^2) +
                      (wave + I(wave^2) | mergeid) +
                      (1 | subclass),
-                   data = data_fit_iadl,
-                   weights = data_fit_iadl$weights
+                   data = data_fit_iadl_low,
+                   weights = data_fit_iadl_low$weights
 )
 
-write.csv(summary(mod_1_iadl)$coefficients,
+write.csv(summary(mod_1_iadl_low)$coefficients,
           file = file.path(res_dir, "mod_1_iadl_pa_low_coefs.csv"))
-write.csv(summary(mod_2_iadl)$coefficients,
+write.csv(summary(mod_2_iadl_low)$coefficients,
           file = file.path(res_dir, "mod_2_iadl_pa_low_coefs.csv"))
 
 ### Plot main models
-plot_data <- lapply(mget(ls(pattern = "mod.*adl$")), ggeffects::ggpredict,
+plot_data <- lapply(mget(ls(pattern = "mod.*low$")), ggeffects::ggpredict,
                     terms = c("wave[all]", "ever_stroke", "baseline_pa_bin_low_cut_1 [0, 1]"),
                     type = "fe"
 )
