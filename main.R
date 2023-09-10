@@ -713,7 +713,7 @@ plots_pa_low
 
 ##### Descriptive table ######
 library("openxlsx")
-ids <- union(data_fit_adl$mergeid, data_fit_iadl$mergeid)
+ids <- Reduce(`union`, lapply(mget(ls(pattern = "data_fit")), `[[`, "mergeid"))
 
 desc_data <- model_data_matched %>%
   filter(mergeid %in% !!ids)
@@ -914,7 +914,7 @@ saveWorkbook(export_desc_vars, file = "test.xlsx", overwrite = TRUE)
 # - baseline_pa_bin_low_cut_1
 # - baseline_pa_bin_high_cut_1
 
-ids <- union(data_fit_adl$mergeid, data_fit_iadl$mergeid)
+ids <- Reduce(`union`, lapply(mget(ls(pattern = "data_fit")), `[[`, "mergeid"))
 before_after <- model_data_matched %>%
   filter(mergeid %in% !!ids) %>%
   group_by(mergeid)
