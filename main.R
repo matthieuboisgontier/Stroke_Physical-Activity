@@ -702,13 +702,6 @@ ggsave(plot = plots_pa_low[[4]] + ylab("IADL"),
 
 plots_pa_low
 
-# TOURNE PENDANT DES HEURES POUR 1 SEUL INTERVAL: DAN, TU POURRAIS M'AIDER STP?
-### 95 Confidence intervals
-#confint(mod_2_adl_pa_high)
-#confint(mod_2_iadl_pa_high)
-#confint(mod_2_adl_pa_low)
-#confint(mod_2_iadl_pa_low)
-
 ##### Descriptive table ######
 library("openxlsx")
 ids <- Reduce(`union`, lapply(mget(ls(pattern = "data_fit")), `[[`, "mergeid"))
