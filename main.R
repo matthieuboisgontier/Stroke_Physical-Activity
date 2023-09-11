@@ -457,7 +457,7 @@ match_data <- match_data %>%
                                                 firstivw, n_invw,
                                                 baseline_bmi, baseline_chronic2)))
 
-match_res <- matchit(ever_stroke ~ country + baseline_adl + baseline_iadl + gender + baseline_age + firstivw + 
+match_res <- matchit(ever_stroke ~ country + baseline_adl + baseline_iadl + gender + baseline_age + firstivw +
                        n_invw + baseline_bmi + baseline_chronic2,
                       data = match_data, ratio = 5)
 matched_sample <- match.data(match_res)
