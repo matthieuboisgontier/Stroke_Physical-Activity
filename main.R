@@ -1,5 +1,5 @@
 ### Title: Functional Limitations in Stroke Survivors: Pre-Stroke Physical Activity Matters
-### Authors: Dan Orsholits, Matthieu Boisgontier
+### Author: Dan Orsholits, Matthieu Boisgontier
 
 ### Packages
 ## To import the data
@@ -452,12 +452,12 @@ match_data <- match_data %>%
     filter(n_invw >= 4)
 
 match_data <- match_data %>%
-    filter(complete.cases(match_data %>% select(ever_stroke, country,
+    filter(complete.cases(match_data %>% select(ever_stroke, country, baseline_adl, baseline_iadl,
                                                 gender, baseline_age,
                                                 firstivw, n_invw,
                                                 baseline_bmi, baseline_chronic2)))
 
-match_res <- matchit(ever_stroke ~ country + gender + baseline_age + firstivw +
+match_res <- matchit(ever_stroke ~ country + baseline_adl + baseline_iadl + gender + baseline_age + firstivw + 
                        n_invw + baseline_bmi + baseline_chronic2,
                       data = match_data, ratio = 5)
 matched_sample <- match.data(match_res)
@@ -477,7 +477,7 @@ model_data_matched <-
 
 model_data_matched <-
     left_join(model_data_matched,
-              matched_sample[, c("mergeid", "weights", "subclass", "baseline_age", "baseline_bmi", "baseline_chronic1", "baseline_chronic2",
+              matched_sample[, c("mergeid", "weights", "subclass", "baseline_adl", "baseline_iadl", "baseline_age", "baseline_bmi", "baseline_chronic1", "baseline_chronic2",
                                  "baseline_pa_bin_low_cut_1", "baseline_pa_bin_high_cut_1")])
 model_data_matched <-
     model_data_matched %>%
@@ -702,6 +702,7 @@ ggsave(plot = plots_pa_low[[4]] + ylab("IADL"),
 
 plots_pa_low
 
+
 ##### Descriptive table ######
 library("openxlsx")
 ids <- Reduce(`union`, lapply(mget(ls(pattern = "data_fit")), `[[`, "mergeid"))
@@ -736,8 +737,8 @@ writeData(export_desc_vars, sheet = "Avg. Obs.", x = missing_adl_iadl)
 ## Time constant variables
 time_constant_vars <-
   c("ever_stroke",
-    "iadl_raw",
-    "adl_raw",
+    "baseline_adl",
+    "baseline_iadl",
     "baseline_pa_bin_low_cut_1",
     "baseline_pa_bin_high_cut_1",
     "baseline_age",
