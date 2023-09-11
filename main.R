@@ -747,7 +747,7 @@ time_constant_vars <-
     "max_edu")
 
 make_desc <- function(x) {
-  if (isTRUE(length(unique(x)) <= 7) | is.factor(x)) {
+  if (isTRUE(length(unique(x)) <= 5) | is.factor(x)) {
     tmp <- table(x)
     empty <- tmp %in% 0
     tmp <- tmp[!empty]
