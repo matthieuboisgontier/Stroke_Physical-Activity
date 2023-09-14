@@ -551,7 +551,7 @@ write.csv(summary(mod_1_iadl_pa_high)$coefficients,
 write.csv(summary(mod_2_iadl_pa_high)$coefficients,
           file = file.path(res_dir, "mod_2_iadl_pa_high_coefs.csv"))
 
-# Plot main analyses (pa_low)
+# Plot main analyses (pa_high)
 plot_pa_high_data <- lapply(mget(ls(pattern = "mod.*high$")), ggeffects::ggpredict,
                             terms = c("wave[all]", "ever_stroke", "baseline_pa_bin_high_cut_1 [0, 1]"),
                             type = "fe"
@@ -652,7 +652,7 @@ write.csv(summary(mod_1_iadl_low)$coefficients,
 write.csv(summary(mod_2_iadl_low)$coefficients,
           file = file.path(res_dir, "mod_2_iadl_pa_low_coefs.csv"))
 
-### Plot main models
+### Plot sensitivity models (pa_low)
 plot_data <- lapply(mget(ls(pattern = "mod.*low$")), ggeffects::ggpredict,
                     terms = c("wave[all]", "ever_stroke", "baseline_pa_bin_low_cut_1 [0, 1]"),
                     type = "fe"
