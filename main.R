@@ -607,7 +607,7 @@ plots_pa_high
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
 mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-                  I(wave^2) + baseline_age + gender + chronic2 +
+                  I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
                   (wave + I(wave^2) | mergeid) + (1 | subclass),
                   data = model_data_matched,
                   weights = model_data_matched$weights
@@ -631,7 +631,7 @@ write.csv(summary(mod_2_adl_pa_low)$coefficients,
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
 mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-                    I(wave^2) + baseline_age + gender + chronic2 +
+                    I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
                     (wave + I(wave^2) | mergeid) + (1 | subclass),
                     data = model_data_matched,
                     weights = model_data_matched$weights
