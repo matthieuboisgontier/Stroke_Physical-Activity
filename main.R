@@ -502,8 +502,8 @@ model_data_matched <-
 res_dir <- as.character(Sys.Date())
 dir.create(res_dir)
 
-mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + wave +
-                            I(wave^2) + baseline_age + gender +
+mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) + baseline_age + gender +
                             max_edu + chronic2 +
                             (wave + I(wave^2) | mergeid) +
                             (1 | subclass),
@@ -513,8 +513,8 @@ mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + w
 
 data_fit_adl_pa_high <- mod_2_adl_pa_high@frame
 
-mod_1_adl_pa_high <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + wave +
-                            I(wave^2) +
+mod_1_adl_pa_high <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) +
                             (wave + I(wave^2) | mergeid) +
                             (1 | subclass),
                           data = data_fit_adl_pa_high,
@@ -527,8 +527,8 @@ write.csv(summary(mod_2_adl_pa_high)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_high_coefs.csv"))
 
 # Main models testing the effect of physical activity (baseline_pa_bin_high) on IADLs
-mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + wave +
-                             I(wave^2) + baseline_age +
+mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) + baseline_age +
                              gender + max_edu + chronic2 +
                              (wave + I(wave^2) | mergeid) +
                              (1 | subclass),
@@ -538,8 +538,8 @@ mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + 
 
 data_fit_iadl_pa_high <- mod_2_iadl_pa_high@frame
 
-mod_1_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + wave +
-                             I(wave^2) +
+mod_1_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) +
                              (wave + I(wave^2) | mergeid) +
                              (1 | subclass),
                            data = data_fit_iadl_pa_high,
@@ -606,8 +606,8 @@ plots_pa_high
 # i.e., replacing baseline_pa_bin_high_cut_1 with baseline_pa_bin_low_cut_1
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
-mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-                  I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
+mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
                   (wave + I(wave^2) | mergeid) + (1 | subclass),
                   data = model_data_matched,
                   weights = model_data_matched$weights
@@ -616,8 +616,8 @@ mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave
 data_fit_adl_pa_low <- mod_2_adl_pa_low@frame
 
 mod_1_adl_pa_low <-
-  lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-         I(wave^2) +
+  lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) +
          (wave + I(wave^2) | mergeid) +
          (1 | subclass),
        data = data_fit_adl_pa_low,
@@ -630,8 +630,8 @@ write.csv(summary(mod_2_adl_pa_low)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_low_coefs.csv"))
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
-mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-                    I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
+mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
                     (wave + I(wave^2) | mergeid) + (1 | subclass),
                     data = model_data_matched,
                     weights = model_data_matched$weights
@@ -639,8 +639,8 @@ mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave 
 
 data_fit_iadl_low <- mod_2_iadl_low@frame
 
-mod_1_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + wave +
-                     I(wave^2) +
+mod_1_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                            ever_stroke * I(wave^2) +
                      (wave + I(wave^2) | mergeid) +
                      (1 | subclass),
                    data = data_fit_iadl_low,
