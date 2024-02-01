@@ -16,6 +16,8 @@ library("lmerTest")
 ## For figures
 library("ggplot2")
 library("ggeffects")
+# For testing LMM assumptions
+library("lattice")
 
 ### Import data
 
@@ -946,3 +948,12 @@ before_after <-
     baseline_pa_mod_rev_1,
     baseline_pa_vig_rev_1
   )
+
+#### ASSUMPTIONS LMM
+# residuals
+plot(mod_2_adl_pa_high, type = c("p", "smooth"))
+# scale-location
+plot(mod_2_adl_pa_high, sqrt(abs(resid(.))) ~ fitted(.),
+     type = c("p", "smooth"))
+# qq plot
+qqmath(mod_2_adl_pa_high, id = 0.05)
