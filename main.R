@@ -358,9 +358,9 @@ model_data <- model_data %>%
 ## Max a low and high cut-off version
 model_data <- model_data %>%
     mutate(pa_bin_low_cut = if_else(pa_mod_rev == 0 | pa_vig_rev == 0, 1, 0),
-           pa_bin_high_cut = if_else(pa_mod_rev == 3 | pa_vig_rev == 3, 0, 1),
+           pa_bin_high_cut = if_else(pa_mod_rev == 3 | pa_vig_rev == 3, 1, 0),
            pa_bin_low_cut_1 = if_else(pa_mod_rev_1 == 0 | pa_vig_rev_1 == 0, 1, 0),
-           pa_bin_high_cut_1 = if_else(pa_mod_rev_1 == 3 | pa_vig_rev_1 == 3, 0, 1))
+           pa_bin_high_cut_1 = if_else(pa_mod_rev_1 == 3 | pa_vig_rev_1 == 3, 1, 0))
 
 ## Clean up chronic conditions
 model_data <- model_data %>%
