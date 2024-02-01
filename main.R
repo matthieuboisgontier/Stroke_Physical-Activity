@@ -505,7 +505,7 @@ dir.create(res_dir)
 mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age + gender +
                             max_edu + chronic2 +
-                            (wave + I(wave^2) | mergeid) +
+                            (wave | mergeid) +
                             (1 | subclass),
                           data = model_data_matched,
                           weights = model_data_matched$weights
@@ -515,7 +515,7 @@ data_fit_adl_pa_high <- mod_2_adl_pa_high@frame
 
 mod_1_adl_pa_high <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) +
-                            (wave + I(wave^2) | mergeid) +
+                            (wave | mergeid) +
                             (1 | subclass),
                           data = data_fit_adl_pa_high,
                           weights = data_fit_adl_pa_high$weights
@@ -530,7 +530,7 @@ write.csv(summary(mod_2_adl_pa_high)$coefficients,
 mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age +
                              gender + max_edu + chronic2 +
-                             (wave + I(wave^2) | mergeid) +
+                             (wave | mergeid) +
                              (1 | subclass),
                            data = model_data_matched,
                            weights = model_data_matched$weights
@@ -540,7 +540,7 @@ data_fit_iadl_pa_high <- mod_2_iadl_pa_high@frame
 
 mod_1_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) +
-                             (wave + I(wave^2) | mergeid) +
+                             (wave | mergeid) +
                              (1 | subclass),
                            data = data_fit_iadl_pa_high,
                            weights = data_fit_iadl_pa_high$weights
@@ -608,7 +608,7 @@ plots_pa_high
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
 mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
-                  (wave + I(wave^2) | mergeid) + (1 | subclass),
+                  (wave | mergeid) + (1 | subclass),
                   data = model_data_matched,
                   weights = model_data_matched$weights
 )
@@ -618,7 +618,7 @@ data_fit_adl_pa_low <- mod_2_adl_pa_low@frame
 mod_1_adl_pa_low <-
   lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) +
-         (wave + I(wave^2) | mergeid) +
+         (wave | mergeid) +
          (1 | subclass),
        data = data_fit_adl_pa_low,
        weights = data_fit_adl_pa_low$weights
@@ -632,7 +632,7 @@ write.csv(summary(mod_2_adl_pa_low)$coefficients,
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
 mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
-                    (wave + I(wave^2) | mergeid) + (1 | subclass),
+                    (wave | mergeid) + (1 | subclass),
                     data = model_data_matched,
                     weights = model_data_matched$weights
 )
@@ -641,7 +641,7 @@ data_fit_iadl_low <- mod_2_iadl_low@frame
 
 mod_1_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) +
-                     (wave + I(wave^2) | mergeid) +
+                     (wave | mergeid) +
                      (1 | subclass),
                    data = data_fit_iadl_low,
                    weights = data_fit_iadl_low$weights
