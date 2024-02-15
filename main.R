@@ -1,4 +1,4 @@
-### Title: Pre-Stroke Physical Activity Matters for Functional Limitations : A Longitudinal Case-Control Study
+### Title: Pre-Stroke Physical Activity Matters for Functional Limitations: A Longitudinal Case-Control Study of 12,860 Participants
 ### Authors: Dan Orsholits, Zack van Allenm Matthieu P. Boisgontier
 
 ### Packages
@@ -18,6 +18,10 @@ library("ggplot2")
 library("ggeffects")
 # For testing LMM assumptions
 library("lattice")
+# For LMM optimization
+library("optimx")
+# For simple effects analysis of interaction terms
+library("emmeans")
 
 ### Import data
 
@@ -61,7 +65,7 @@ for (wave in waves) {
 
 ### Convert wide format master to long
 ivw_ages <- master_file %>%
-    select(matches("^mergeid$|^country$|^gender$|age_int_w[[:digit:]]$|^interview_w[[:digit:]]$"))
+    dplyr::select(matches("^mergeid$|^country$|^gender$|age_int_w[[:digit:]]$|^interview_w[[:digit:]]$"))
 ivw_ages_long <- ivw_ages %>%
     pivot_longer(cols = !c("mergeid", "country", "gender"),
                  names_sep = "_w",
@@ -408,7 +412,7 @@ master_file_m <- master_file %>%
   mutate(country = factor(country,
                             levels = attr(country, "labels", exact = TRUE),
                             labels = names(attr(country, "labels", exact = TRUE)))) %>%
-  select(mergeid, matches("^interview_w[[:digit:]]$"))
+  dplyr::select(mergeid, matches("^interview_w[[:digit:]]$"))
 
 match_data <- left_join(match_data, master_file_m)
 match_data <- match_data %>%
@@ -454,7 +458,7 @@ match_data <- match_data %>%
     filter(n_invw >= 4)
 
 match_data <- match_data %>%
-    filter(complete.cases(match_data %>% select(ever_stroke, country, baseline_adl, baseline_iadl,
+    filter(complete.cases(match_data %>% dplyr::select(ever_stroke, country, baseline_adl, baseline_iadl,
                                                 gender, baseline_age,
                                                 firstivw, n_invw,
                                                 baseline_bmi, baseline_chronic2)))
@@ -479,7 +483,8 @@ model_data_matched <-
 
 model_data_matched <-
     left_join(model_data_matched,
-              matched_sample[, c("mergeid", "weights", "subclass", "baseline_adl", "baseline_iadl", "baseline_age", "baseline_bmi", "baseline_chronic1", "baseline_chronic2",
+              matched_sample[, c("mergeid", "weights", "subclass", "baseline_adl", "baseline_iadl", 
+                                 "baseline_age", "baseline_bmi", "baseline_chronic1", "baseline_chronic2",
                                  "baseline_pa_bin_low_cut_1", "baseline_pa_bin_high_cut_1")])
 model_data_matched <-
     model_data_matched %>%
@@ -507,50 +512,68 @@ dir.create(res_dir)
 mod_2_adl_pa_high <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age + gender +
                             max_edu + chronic2 +
-                            (wave | mergeid) +
+                            (wave + I(wave^2) | mergeid) +
                             (1 | subclass),
                           data = model_data_matched,
-                          weights = model_data_matched$weights
+                          weights = model_data_matched$weights,
+                          control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
+                                                optCtrl = list(method = c("bobyqa", "Nelder-Mead","nlminb","L-BFGS-B", "nloptwrap"), 
+                                                               starttests = FALSE, kkt = FALSE)), na.action = na.omit
 )
 
-data_fit_adl_pa_high <- mod_2_adl_pa_high@frame
+summary(mod_2_adl_pa_high)$coefficients
 
-mod_1_adl_pa_high <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) +
-                            (wave | mergeid) +
-                            (1 | subclass),
-                          data = data_fit_adl_pa_high,
-                          weights = data_fit_adl_pa_high$weights
-)
+tidy_model <- tidy(mod_2_adl_pa_high, conf.int = TRUE)
 
-write.csv(summary(mod_1_adl_pa_high)$coefficients,
-          file = file.path(res_dir, "mod_1_adl_pa_high_coefs.csv"))
 write.csv(summary(mod_2_adl_pa_high)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_high_coefs.csv"))
 
-# Main models testing the effect of physical activity (baseline_pa_bin_high) on IADLs
+
+#### Simple effects analysis
+
+# Tidy models output
+tidy_output <- tidy(mod_2_adl_pa_high, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+
+# Extract information for baseline PA and the interaction term
+baseline_pa_info <- tidy_output %>% filter(term == "baseline_pa_bin_high_cut_1")
+interaction_info <- tidy_output %>% filter(term == "ever_strokeTRUE:baseline_pa_bin_high_cut_1")
+
+# Calculate the effect of high PA on people with a stroke
+effect_pa_stroke <- baseline_pa_info$estimate + interaction_info$estimate
+
+# Combine the CIs for a rough estimate
+ci_pa_stroke_lower <- baseline_pa_info$conf.low + interaction_info$conf.low
+ci_pa_stroke_upper <- baseline_pa_info$conf.high + interaction_info$conf.high
+
+# Display the results
+cat("Effect of high physical activity on people without a stroke:", baseline_pa_info$estimate, "\n")
+cat("95% CI for effect of high physical activity on people without a stroke:", baseline_pa_info$conf.low, "to", baseline_pa_info$conf.high, "\n")
+
+cat("Effect of high physical activity on people with a stroke:", effect_pa_stroke, "\n")
+cat("95% CI for effect of high physical activity on people with a stroke:", ci_pa_stroke_lower, "to", ci_pa_stroke_upper, "\n")
+
+# simple slopes analysis p-values
+emm_interaction <- emmeans(mod_2_adl_pa_high, pairwise ~ ever_stroke * baseline_pa_bin_high_cut_1)
+summary(emm_interaction$contrasts)
+
+# Main models testing the effect of physical activity (baseline_pa_bin_high) on IADLs ####
 mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age +
                              gender + max_edu + chronic2 +
-                             (wave | mergeid) +
+                             (wave + I(wave^2) | mergeid) +
                              (1 | subclass),
                            data = model_data_matched,
-                           weights = model_data_matched$weights
+                           weights = model_data_matched$weights,
+                           control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
+                                                 optCtrl = list(method = c("bobyqa", "Nelder-Mead","nlminb","L-BFGS-B", "nloptwrap"), 
+                                                                starttests = FALSE, kkt = FALSE)), na.action = na.omit
 )
 
-data_fit_iadl_pa_high <- mod_2_iadl_pa_high@frame
+summary(mod_2_iadl_pa_high)$coefficients
 
-mod_1_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) +
-                             (wave | mergeid) +
-                             (1 | subclass),
-                           data = data_fit_iadl_pa_high,
-                           weights = data_fit_iadl_pa_high$weights
-)
+tidy_model2 <- tidy(mod_2_iadl_pa_high, conf.int = TRUE)
 
-write.csv(summary(mod_1_iadl_pa_high)$coefficients,
-          file = file.path(res_dir, "mod_1_iadl_pa_high_coefs.csv"))
-write.csv(summary(mod_2_iadl_pa_high)$coefficients,
+write.csv(tidy_model2,
           file = file.path(res_dir, "mod_2_iadl_pa_high_coefs.csv"))
 
 # Plot main analyses (pa_high)
@@ -559,18 +582,18 @@ plot_pa_high_data <- lapply(mget(ls(pattern = "mod.*high$")), ggeffects::ggpredi
                             type = "fe"
 )
 
-plots_pa_high <- lapply(plot_pa_high_data, function(data) {
-  ggplot(data = data, mapping = aes(x = x, y = predicted, colour = facet, linetype = group)) +
-    geom_line()  +
+plots_pa_high <- lapply(plot_pa_high_data, function(data) {ggplot(data = data,
+                mapping = aes(x = x, y = predicted, colour = group, fill = group, linetype = facet)) +
+    scale_linetype_manual(values=c("dashed","solid")) +     geom_line()  +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-    geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = facet), alpha = 0.2) +
-    scale_colour_hue (aesthetics = c("colour", "fill"), direction = -1, labels = c("Stroke-Free Controls", "Stroke Survivors")) +
-    labs(x = "Survey Wave", y= "Functional Limitation", colour = "", linetype = "Low Physical Activity")
-})
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+    scale_colour_hue (aesthetics = c("colour", "fill"), direction = -1,
+                      labels = c("Stroke-Free Controls", "Stroke Survivors")) +
+    labs(x = "Survey Wave", y= "Functional Limitation", colour = "", linetype = "Physical Activity") })
 
 ggsave(plot = plots_pa_high[[1]] + ylab("ADL"),
-       filename = file.path(res_dir, "stroke_test_plot_mod_1_adl_pa_high.png"),
+       filename = file.path(res_dir, "stroke_test_plot_mod_1_adl_pa_high.pdf"),
        device = "png",
        dpi = 600,
        width = 20,
@@ -608,50 +631,46 @@ plots_pa_high
 # i.e., replacing baseline_pa_bin_high_cut_1 with baseline_pa_bin_low_cut_1
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
-mod_2_adl_pa_low <- lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
-                  (wave | mergeid) + (1 | subclass),
+mod_2_adl_pa_low <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                           ever_stroke * I(wave^2) + baseline_age + gender +
+                           max_edu + chronic2 +
+                           (wave + I(wave^2) | mergeid) +
+                           (1 | subclass),
                   data = model_data_matched,
-                  weights = model_data_matched$weights
+                  weights = model_data_matched$weights,
+                  control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
+                                        optCtrl = list(method = c("bobyqa", "Nelder-Mead","nlminb","L-BFGS-B", "nloptwrap"), 
+                                                       starttests = FALSE, kkt = FALSE)), na.action = na.omit
 )
 
-data_fit_adl_pa_low <- mod_2_adl_pa_low@frame
 
-mod_1_adl_pa_low <-
-  lmer(adl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) +
-         (wave | mergeid) +
-         (1 | subclass),
-       data = data_fit_adl_pa_low,
-       weights = data_fit_adl_pa_low$weights
-  )
+summary(mod_2_adl_pa_low)$coefficients
 
-write.csv(summary(mod_1_adl_pa_low)$coefficients,
-          file = file.path(res_dir, "mod_1_adl_pa_low_coefs.csv"))
-write.csv(summary(mod_2_adl_pa_low)$coefficients,
+tidy_model3 <- tidy(mod_2_adl_pa_low, conf.int = TRUE)
+
+write.csv(tidy_model3,
           file = file.path(res_dir, "mod_2_adl_pa_low_coefs.csv"))
 
 # Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
-mod_2_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) + baseline_age + gender + chronic2 + max_edu + 
-                    (wave | mergeid) + (1 | subclass),
+mod_2_iadl_low <- lmer(iadl_raw ~ ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
+                         ever_stroke * I(wave^2) + baseline_age + gender +
+                         max_edu + chronic2 +
+                         (wave + I(wave^2) | mergeid) +
+                         (1 | subclass),
                     data = model_data_matched,
-                    weights = model_data_matched$weights
+                    weights = model_data_matched$weights,
+                    control = lmerControl(optimizer = "optimx", calc.derivs = FALSE,
+                                          optCtrl = list(method = c("bobyqa", "Nelder-Mead","nlminb","L-BFGS-B", "nloptwrap"), 
+                                                         starttests = FALSE, kkt = FALSE)), na.action = na.omit
 )
+
+summary(mod_2_iadl_low)$coefficients
+
+tidy_model4 <- tidy(mod_2_iadl_low, conf.int = TRUE)
 
 data_fit_iadl_low <- mod_2_iadl_low@frame
 
-mod_1_iadl_low <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
-                            ever_stroke * I(wave^2) +
-                     (wave | mergeid) +
-                     (1 | subclass),
-                   data = data_fit_iadl_low,
-                   weights = data_fit_iadl_low$weights
-)
-
-write.csv(summary(mod_1_iadl_low)$coefficients,
-          file = file.path(res_dir, "mod_1_iadl_pa_low_coefs.csv"))
-write.csv(summary(mod_2_iadl_low)$coefficients,
+write.csv(tidy_model4,
           file = file.path(res_dir, "mod_2_iadl_pa_low_coefs.csv"))
 
 ### Plot sensitivity models (pa_low)
@@ -660,15 +679,15 @@ plot_data <- lapply(mget(ls(pattern = "mod.*low$")), ggeffects::ggpredict,
                     type = "fe"
 )
 
-plots_pa_low <- lapply(plot_data, function(data) {
-  ggplot(data = data, mapping = aes(x = x, y = predicted, colour = facet, linetype = group)) +
-    geom_line()  +
+plots_pa_low <- lapply(plot_data, function(data) {ggplot(data = data,
+    mapping = aes(x = x, y = predicted, colour = group, fill = group, linetype = facet)) +
+    scale_linetype_manual(values=c("solid", "dashed")) +     geom_line()  +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-    geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = facet), alpha = 0.2) + # default conf.level = .95
-    scale_colour_hue (aesthetics = c("colour", "fill"), direction = -1, labels = c("Stroke-Free Controls", "Stroke Survivors")) +
-    labs(x = "Survey Wave", y= "Functional Limitation", colour = "", linetype = "Low Physical Activity")
-})
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+    scale_colour_hue (aesthetics = c("colour", "fill"), direction = -1,
+                      labels = c("Stroke-Free Controls", "Stroke Survivors")) +
+    labs(x = "Survey Wave", y= "Functional Limitation", colour = "", linetype = "Physical Activity") })
 
 ggsave(plot = plots_pa_low[[1]] + ylab("ADL"),
        filename = file.path(res_dir, "stroke_test_plot_mod_1_adl_pa_low.png"),
