@@ -1,5 +1,5 @@
 ### Title: Pre-Stroke Physical Activity Matters for Functional Limitations : A Longitudinal Case-Control Study
-### Authors: Dan Orsholits, Matthieu Boisgontier
+### Authors: Dan Orsholits, Zack van Allenm Matthieu P. Boisgontier
 
 ### Packages
 ## To import the data
