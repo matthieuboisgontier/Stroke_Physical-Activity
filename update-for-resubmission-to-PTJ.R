@@ -1,4 +1,4 @@
-### Title: Pre-Stroke Physical Activity Matters for Functional Limitations in Stroke Survivors: A Longitudinal Case-Control Study
+### Title: Pre-Stroke Physical Activity Matters for Functional Limitations : A Longitudinal Case-Control Study
 ### Authors: Dan Orsholits, Matthieu Boisgontier
 
 ### Packages
