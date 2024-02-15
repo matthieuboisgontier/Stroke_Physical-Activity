@@ -505,7 +505,8 @@ model_data_matched <-
     mutate(wave = wave - 1)
 
 #### Estimate main models
-# Main models testing the effect of physical activity (baseline_pa_bin_high) on ADLs
+
+## Main models testing the effect of physical activity (baseline_pa_bin_high) on ADLs
 res_dir <- as.character(Sys.Date())
 dir.create(res_dir)
 
@@ -529,7 +530,7 @@ write.csv(summary(mod_2_adl_pa_high)$coefficients,
           file = file.path(res_dir, "mod_2_adl_pa_high_coefs.csv"))
 
 
-#### Simple effects analysis
+## Simple effects analysis
 
 # Tidy models output
 tidy_output <- tidy(mod_2_adl_pa_high, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
@@ -556,7 +557,7 @@ cat("95% CI for effect of high physical activity on people with a stroke:", ci_p
 emm_interaction <- emmeans(mod_2_adl_pa_high, pairwise ~ ever_stroke * baseline_pa_bin_high_cut_1)
 summary(emm_interaction$contrasts)
 
-# Main models testing the effect of physical activity (baseline_pa_bin_high) on IADLs ####
+## Main models testing the effect of physical activity (baseline_pa_bin_high) on IADLs ####
 mod_2_iadl_pa_high <- lmer(iadl_raw ~ever_stroke * baseline_pa_bin_high_cut_1 + ever_stroke * wave +
                             ever_stroke * I(wave^2) + baseline_age +
                              gender + max_edu + chronic2 +
@@ -630,7 +631,7 @@ plots_pa_high
 # Using low cut-off  of physical activity instead of a high cut-off
 # i.e., replacing baseline_pa_bin_high_cut_1 with baseline_pa_bin_low_cut_1
 
-# Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
+## Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on ADLs
 mod_2_adl_pa_low <- lmer(adl_raw ~ ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                            ever_stroke * I(wave^2) + baseline_age + gender +
                            max_edu + chronic2 +
@@ -651,7 +652,7 @@ tidy_model3 <- tidy(mod_2_adl_pa_low, conf.int = TRUE)
 write.csv(tidy_model3,
           file = file.path(res_dir, "mod_2_adl_pa_low_coefs.csv"))
 
-# Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
+## Sensitivity models testing the effect of physical activity (baseline_pa_bin_low) on IADLs
 mod_2_iadl_low <- lmer(iadl_raw ~ ever_stroke * baseline_pa_bin_low_cut_1 + ever_stroke * wave +
                          ever_stroke * I(wave^2) + baseline_age + gender +
                          max_edu + chronic2 +
@@ -724,7 +725,7 @@ ggsave(plot = plots_pa_low[[4]] + ylab("IADL"),
 plots_pa_low
 
 
-##### Descriptive table ######
+#### Descriptive table 
 library("openxlsx")
 ids <- Reduce(`union`, lapply(mget(ls(pattern = "data_fit")), `[[`, "mergeid"))
 
@@ -968,7 +969,7 @@ before_after <-
     baseline_pa_vig_rev_1
   )
 
-#### ASSUMPTIONS LMM
+#### Assumptions LMM
 # residuals
 plot(mod_2_adl_pa_high, type = c("p", "smooth"))
 # scale-location
